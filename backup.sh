@@ -20,8 +20,9 @@ fi
 cd $BACK_DIR
  
 # Backup all database tables
+# Use the (sed -e '/table/d') command to exclude unnecessary tables
 for db in $(mysql -u$MYSQL_USER -p$MYSQL_PASS -B -N -e 'SHOW DATABASES' |sed -e '/schema/d' -e '/mysql/d')
-do
+    do
 	mysqldump -u$MYSQL_USER -p$MYSQL_PASS ${db} | gzip -9 - > ${db}.sql.gz
 done
  
@@ -30,7 +31,7 @@ tar -zcf mysql_$(date +%Y%m%d).tar.gz *.sql.gz --remove-files
 
 # Packing site data
 for web in $(ls -1 /home/wwwroot |sed -e '/php/d')
-do
+    do
 	tar -zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/$web/
 done
  
