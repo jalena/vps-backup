@@ -49,8 +49,8 @@ EOF
 		read -p "Please enter the nginx configuration path:" NGINX_PATH
 			[[ -z $NGINX_PATH ]] && NGINX_PATH="/usr/local/nginx/conf/vhost"
 	    echo -e "---------------------------"
-	    echo -e "Backup directory = $MYSQL_USER"
-	    echo -e "nginx directory = $MYSQL_PASS"
+	    echo -e "Backup directory = $WEB_PATH"
+	    echo -e "nginx directory = $NGINX_PATH"
 	    echo -e "---------------------------"
 cat > /root/.backup.option<<EOF
 WEB_PATH=$WEB_PATH
