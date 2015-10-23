@@ -107,7 +107,7 @@ function upload_file(){
 		do
 			#scp ${file} root@23.239.196.3:/root/backup/${file}
 			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
-			echo ok!
+			echo ok! 
 	done
 }
 
