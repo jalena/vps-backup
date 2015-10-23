@@ -1,6 +1,7 @@
 # VPS数据备份及数据库备份
 
-<h3>支持轮询备份</h3>
+<h3>使用方法</h3>
+Usage: ./backup.sh init|backup|db|Restore
 
 <h3>备份数据如下</h3>
 <ol>
@@ -11,5 +12,3 @@
 
 <h3>支持一键恢复</h3>
 ./backup.sh Restore
-
-Usage: ./backup.sh init|backup|db|Restore
