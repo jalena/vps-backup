@@ -22,21 +22,14 @@ function create_backup_directory(){
 # Initialize the database of account information
 function initialization(){
 	if [[ ! -e '/root/.my.cnf' ]]; then
-#		echo -e "\033[032mPlease enter the MySQL user:"
+		echo -e "\033[032mPlease enter the MySQL user:"
 		read -p "(Default user: root):" MYSQL_USER
 		[[ -z "$MYSQL_USER" ]] && MYSQL_USER="root"
-		echo ""
-	    echo "---------------------------"
-	    echo "MySQL user = $MYSQL_USER"
-	    echo "---------------------------"
-	    echo ""
-#	    echo -e "\033[032mPlease enter the MySQL password:"
-	    read -s -p "(Please enter the MySQL password:)" MYSQL_PASS
-	    echo ""
-	    echo "---------------------------"
-	    echo "MySQL user = $MYSQL_PASS"
-	    echo "---------------------------"
-	    echo ""
+	    read -p "(Please enter the MySQL password:)" MYSQL_PASS
+	    echo -e "---------------------------"
+	    echo -e "MySQL User = $MYSQL_USER"
+	    echo -e "MySQL Pass = $MYSQL_PASS"
+	    echo -e "---------------------------"
 	cat > /root/.my.cnf<<EOF
 [client]
 user=$MYSQL_USER
@@ -55,6 +48,10 @@ EOF
 		echo -e "\033[032mnginx configuration path: /usr/local/nginx/conf/vhost"
 		read -p "Please enter the nginx configuration path:" NGINX_PATH
 			[[ -z $NGINX_PATH ]] && NGINX_PATH="/usr/local/nginx/conf/vhost"
+	    echo -e "---------------------------"
+	    echo -e "Backup directory = $MYSQL_USER"
+	    echo -e "nginx directory = $MYSQL_PASS"
+	    echo -e "---------------------------"
 cat > /root/.backup.option<<EOF
 WEB_PATH=$WEB_PATH
 NGINX_PATH=$NGINX_PATH
@@ -98,7 +95,9 @@ function packing_data(){
 
 # package the nginx configuration file
 function configuration(){
-	tar -zcPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
+	nginx_cnf='find / -name nginx.conf |grep -v root'
+	tar -cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
+	tar -rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
 }
 
 # Upload data
