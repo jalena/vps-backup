@@ -13,7 +13,7 @@ function create_backup_directory(){
 	# Create backup directory
 	if [[ -d /root/backup ]] ;
 	   then
-		rm -rf "/root//backup/*"
+		rm -rf "/root/backup/*"
 	   else	
 		mkdir -p "/root/backup"
 	fi
