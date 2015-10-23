@@ -31,7 +31,7 @@ function initialization(){
 	    echo "---------------------------"
 	    echo ""
 #	    echo -e "\033[032mPlease enter the MySQL password:"
-	    read -p "(Please enter the MySQL password:)" MYSQL_PASS
+	    read -s -p "(Please enter the MySQL password:)" MYSQL_PASS
 	    echo ""
 	    echo "---------------------------"
 	    echo "MySQL user = $MYSQL_PASS"
