@@ -7,18 +7,6 @@
 #   Intro:  https://jalena.bcsytv.com/archives/1358
 #===============================================================================================
 
-# Create backup directory
-function create_backup_directory(){
-	cd ~
-	# Create backup directory
-	if [[ -d /root/backup ]] ;
-	   then
-		rm -rf "/root/backup/*"
-	   else	
-		mkdir -p "/root/backup"
-	fi
-}
-
 # Initialize the database of account information
 function initialization(){
 	if [[ ! -e '/root/.my.cnf' ]]; then
@@ -62,10 +50,16 @@ EOF
 function initialization_check(){
 	if [[ -e '/root/.backup.option' ]]; then
 		. .backup.option
-		cd /root/backup
 	else
 		echo -e "Not initialized, Please enter: \033[032m./backup.sh init"
 		exit 1
+	fi
+
+	if [[ -d '/root/backup' ]]; then
+		cd /root/backup
+	else
+		mkdir -p "/root/backup"
+		cd /root/backup
 	fi
 	
 	if [[ ! -e '/root/.my.cnf' ]]; then
@@ -82,22 +76,22 @@ function backup_database(){
 	done
 
 	# Pack all database tables
-	tar -zcf mysql_$(date +%Y%m%d).tar.gz *.sql.gz --remove-files
+	tar zcf mysql_$(date +%Y%m%d).tar.gz *.sql.gz --remove-files
 }
  
 # Packing site data
 function packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
-		tar -zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/$web/
+		tar zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/$web/
 	done
 }
 
 # package the nginx configuration file
 function configuration(){
 	nginx_cnf='find / -name nginx.conf |grep -v root'
-	tar -cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
-	tar -rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
+	tar cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
+	tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
 }
 
 # Upload data
@@ -107,16 +101,15 @@ function upload_file(){
 		do
 			#scp ${file} root@23.239.196.3:/root/backup/${file}
 			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
-			echo ok! 
+			echo -e package ${file} ok! 
 	done
 }
 
 # Restore all data
 function restore_all(){
 	initialization_check
-	echo "The function of undeveloped!"
 
-	tar -zxf mysql*.tar.gz
+	tar zxf mysql*.tar.gz
 	for db in $(find *.sql.gz | sed 's/.sql.gz//g')
 		do
 			mysqladmin create ${db}
@@ -136,7 +129,6 @@ function restore_all(){
 
 # Initialization settings
 function initial_setup(){
-	create_backup_directory
 	initialization
 }
 
