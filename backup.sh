@@ -73,6 +73,7 @@ function backup_database(){
 	for db in $(mysql -B -N -e 'SHOW DATABASES' |sed -e '/schema/d' -e '/mysql/d')
 		do
 			mysqldump ${db} | gzip -9 - > ${db}.sql.gz
+			echo -e "Backup data table ${db} success!"
 	done
 
 	# Pack all database tables
@@ -84,6 +85,7 @@ function packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
 		tar zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/${web}
+		echo -e "package ${web} success!"
 	done
 }
 
@@ -91,7 +93,9 @@ function packing_data(){
 function configuration(){
 	nginx_cnf='find / -name nginx.conf |grep -v root'
 	tar cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
+	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
 	tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
+	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
 }
 
 # Upload data
@@ -101,7 +105,7 @@ function upload_file(){
 		do
 			#scp ${file} root@23.239.196.3:/root/backup/${file}
 			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
-			echo -e package ${file} ok! 
+			#echo -e package ${file} ok! 
 	done
 }
 
