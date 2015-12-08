@@ -95,7 +95,7 @@ function configuration(){
 	tar cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
 	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
 	tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
-	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
+	echo -e "Additional file successfully"
 }
 
 # Upload data
