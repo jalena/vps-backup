@@ -83,7 +83,7 @@ function backup_database(){
 function packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
-		tar zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/$web
+		tar zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/${web}
 	done
 }
 
