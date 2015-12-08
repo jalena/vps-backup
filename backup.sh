@@ -147,7 +147,7 @@ function backup_all(){
 	backup_database
 	packing_data
 	configuration
-	upload_file
+	#upload_file
 }
 
 # Initialization step
