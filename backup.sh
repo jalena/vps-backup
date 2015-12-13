@@ -8,7 +8,9 @@
 #===============================================================================================
 
 # Initialize the database of account information
-function initialization(){
+initialization(){
+	current_date=$(date +%Y%m%d)
+
 	if [[ ! -e '/root/.my.cnf' ]]; then
 		echo -e "\033[032mPlease enter the MySQL user:"
 		read -p "(Default user: root):" MYSQL_USER
@@ -47,7 +49,7 @@ EOF
 	fi
 }
 
-function initialization_check(){
+initialization_check(){
 	if [[ -e '/root/.backup.option' ]]; then
 		. .backup.option
 	else
@@ -69,7 +71,7 @@ function initialization_check(){
 }
 
 # Backup all database tables
-function backup_database(){
+backup_database(){
 	for db in $(mysql -B -N -e 'SHOW DATABASES' |sed -e '/schema/d' -e '/mysql/d')
 		do
 			mysqldump ${db} | gzip -9 - > ${db}.sql.gz
@@ -81,7 +83,7 @@ function backup_database(){
 }
  
 # Packing site data
-function packing_data(){
+packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
 		tar zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/${web}
@@ -90,7 +92,7 @@ function packing_data(){
 }
 
 # package the nginx configuration file
-function configuration(){
+configuration(){
 	nginx_cnf='find / -name nginx.conf |grep -v root'
 	tar cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
 	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
@@ -99,7 +101,7 @@ function configuration(){
 }
 
 # Upload data
-function upload_file(){
+upload_file(){
 	# Upload data
 	for file in $(find *.tar.gz | grep $)
 		do
@@ -110,7 +112,7 @@ function upload_file(){
 }
 
 # Restore all data
-function restore_all(){
+restore_all(){
 	initialization_check
 
 	tar zxf mysql*.tar.gz
@@ -132,17 +134,17 @@ function restore_all(){
 }
 
 # Initialization settings
-function initial_setup(){
+initial_setup(){
 	initialization
 }
 
-function backup_db(){
+backup_db(){
 	initialization_check
 	backup_database
 }
 
 # Full backup
-function backup_all(){
+backup_all(){
 	initialization_check
 	backup_database
 	packing_data
