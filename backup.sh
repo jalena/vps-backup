@@ -79,24 +79,23 @@ backup_database(){
 	done
 
 	# Pack all database tables
-	tar zcf mysql_$(date +%Y%m%d).tar.gz *.sql.gz --remove-files
+	tar zcf mysql_$current_date.tar.gz *.sql.gz --remove-files
 }
  
 # Packing site data
 packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
-		tar zcPf ${web}_$(date +%Y%m%d).tar.gz /home/wwwroot/${web}
+		tar zcPf ${web}_$current_date.tar.gz /home/wwwroot/${web}
 		echo -e "package ${web} success!"
 	done
 }
 
 # package the nginx configuration file
 configuration(){
-	nginx_cnf=`find / -name nginx.conf |grep -v root`
-	tar cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
-	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
-	tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
+	tar cPf nginx_$current_date.tar.gz $NGINX_PATH
+	echo -e "package nginx_$current_date.tar.gz success!"
+	find / -name nginx.conf |grep -v root | xargs tar rPf nginx_$current_date.tar.gz
 	echo -e "Additional file successfully"
 }
 
