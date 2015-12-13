@@ -96,7 +96,8 @@ configuration(){
 	nginx_cnf='find / -name nginx.conf |grep -v root'
 	tar cPf nginx_$(date +%Y%m%d).tar.gz $NGINX_PATH
 	echo -e "package nginx_$(date +%Y%m%d).tar.gz success!"
-	tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
+	echo "tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf"
+	#tar rPf nginx_$(date +%Y%m%d).tar.gz $nginx_cnf
 	echo -e "Additional file successfully"
 }
 
