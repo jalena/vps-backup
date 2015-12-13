@@ -9,8 +9,7 @@
 
 # Initialize the database of account information
 initialization(){
-	current_date=$(date +%Y%m%d)
-
+	
 	if [[ ! -e '/root/.my.cnf' ]]; then
 		echo -e "\033[032mPlease enter the MySQL user:"
 		read -p "(Default user: root):" MYSQL_USER
@@ -50,6 +49,7 @@ EOF
 }
 
 initialization_check(){
+	current_date=`date +%Y%m%d`
 	if [[ -e '/root/.backup.option' ]]; then
 		. .backup.option
 	else
