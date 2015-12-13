@@ -9,7 +9,6 @@
 
 # Initialize the database of account information
 initialization(){
-	
 	if [[ ! -e '/root/.my.cnf' ]]; then
 		echo -e "\033[032mPlease enter the MySQL user:"
 		read -p "(Default user: root):" MYSQL_USER
