@@ -1,7 +1,11 @@
 # VPS数据备份及数据库备份
 ====
 <h3>使用方法</h3>
-><p>curl "https://raw.githubusercontent.com/jalena/vps-backup/master/backup.sh" -O backup.sh && chmod +x backup.sh && ./backup.sh init</p>
+```Bash 
+curl "https://raw.githubusercontent.com/jalena/vps-backup/master/backup.sh" -O backup.sh 
+chmod +x backup.sh
+./backup.sh init
+```
 ><p>Usage: ./backup.sh init|backup|db|Restore</p>
 
 <h3>备份数据如下</h3>
@@ -11,4 +15,6 @@
 
 
 <h3>支持一键恢复</h3>
->./backup.sh Restore
+```Bash 
+./backup.sh Restore
+```
