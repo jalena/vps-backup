@@ -2,8 +2,7 @@
 
 ###初始配置
 ```sh 
-curl "https://raw.githubusercontent.com/jalena/vps-backup/master/backup.sh" -O backup.sh 
-chmod +x backup.sh
+curl "https://raw.githubusercontent.com/jalena/vps-backup/master/backup.sh" -O backup.sh && chmod +x backup.sh
 ./backup.sh init
 ```
 -
