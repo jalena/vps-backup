@@ -74,7 +74,7 @@ backup_database(){
 	for db in $(mysql -B -N -e 'SHOW DATABASES' |sed -e '/schema/d' -e '/mysql/d')
 		do
 			mysqldump ${db} | gzip -9 - > ${db}.sql.gz
-			echo -e "Backup data table ${db} success!"
+			echo -e "\t\e[1;32m--- Backup data table \e[1;31m${db} \e[1;32msuccess! ---\e[0m"
 	done
 
 	# Pack all database tables
@@ -86,16 +86,16 @@ packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
 		tar zcPf ${web}_$current_date.tar.gz /home/wwwroot/${web}
-		echo -e "package ${web} success!"
+		echo -e "\t\e[1;32m--- package \e[1;31m${web} \e[1;32msuccess! ---\e[0m"
 	done
 }
 
 # package the nginx configuration file
 configuration(){
 	tar cPf nginx_$current_date.tar.gz $NGINX_PATH
-	echo -e "package nginx_$current_date.tar.gz success!"
+	echo -e "\t\e[1;32m--- package \e[1;31mnginx_$current_date.tar.gz \e[1;32msuccess! ---\e[0m"
 	find / -name nginx.conf |grep -v root | xargs tar rPf nginx_$current_date.tar.gz
-	echo -e "Additional file successfully"
+	echo -e "\t\e[1;32m--- Additional file successfully ---\e[0m"
 }
 
 # Upload data
@@ -167,6 +167,6 @@ Restore)
     restore_all
     ;;
 *)
-    echo "Usage: ./backup.sh init|backup|db|Restore"
+    echo -e "\n\t\e[1;32mUsage: \e[1;33m./backup.sh init|backup|db|Restore\n\e[0m"
     ;;
 esac
