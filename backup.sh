@@ -1,5 +1,4 @@
 #! /bin/bash
-
 #===============================================================================================
 #   System Required:  CentOS6.x (32bit/64bit)
 #   Description: Server backup and restore script
@@ -18,7 +17,7 @@ initialization(){
 	    echo -e "MySQL User = $MYSQL_USER"
 	    echo -e "MySQL Pass = $MYSQL_PASS"
 	    echo -e "---------------------------"
-	cat > /root/.my.cnf<<EOF
+cat > /root/.my.cnf<<EOF
 [client]
 user=$MYSQL_USER
 password=$MYSQL_PASS
@@ -49,20 +48,22 @@ EOF
 
 initialization_check(){
 	current_date=`date +%Y%m%d`
+	backup_dir="/root/backup"
+
 	if [[ -e '/root/.backup.option' ]]; then
-		. .backup.option
+		source .backup.option #亦可使用.引入
 	else
 		echo -e "Not initialized, Please enter: \033[032m./backup.sh init"
 		exit 1
 	fi
 
-	if [[ -d '/root/backup' ]]; then
-		cd /root/backup
+	if [[ -d $backup_dir ]]; then
+		cd $backup_dir
 	else
-		mkdir -p "/root/backup"
-		cd /root/backup
+		mkdir -p $backup_dir
+		cd $backup_dir
 	fi
-	
+
 	if [[ ! -e '/root/.my.cnf' ]]; then
 		echo -e "Not initialized, Please enter: \033[032m./backup.sh init"
 		exit 1
@@ -80,7 +81,7 @@ backup_database(){
 	# Pack all database tables
 	tar zcf mysql_$current_date.tar.gz *.sql.gz --remove-files
 }
- 
+
 # Packing site data
 packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
@@ -100,12 +101,13 @@ configuration(){
 
 # Upload data
 upload_file(){
+	cd $backup_dir
 	# Upload data
 	for file in $(find *.tar.gz | grep $)
 		do
 			#scp ${file} root@23.239.196.3:/root/backup/${file}
 			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
-			~/qshell fput backup ${file} ~/backup/${file} http://up.qiniug.com
+			./qshell fput backup ${file} ~/backup/${file} http://up.qiniug.com
 	done
 }
 
@@ -162,6 +164,9 @@ backup)
     ;;
 db)
 	backup_db
+	;;
+up)
+	upload_file
 	;;
 Restore)
     restore_all
