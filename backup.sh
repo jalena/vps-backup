@@ -6,13 +6,19 @@
 #   Intro:  https://jalena.bcsytv.com/archives/1358
 #===============================================================================================
 
+# global variables
+variables(){
+	current_date=`date +%Y%m%d`
+	backup_dir=/root/backup
+}
+
 # Initialize the database of account information
 initialization(){
 	if [[ ! -e '/root/.my.cnf' ]]; then
 		echo -e "\033[032mPlease enter the MySQL user:"
-		read -p "(Default user: root):" MYSQL_USER
+		read -p "Default user: root:" MYSQL_USER
 		[[ -z "$MYSQL_USER" ]] && MYSQL_USER="root"
-	    read -p "(Please enter the MySQL password:)" MYSQL_PASS
+	    read -p "Please enter the MySQL password:" MYSQL_PASS
 	    echo -e "---------------------------"
 	    echo -e "MySQL User = $MYSQL_USER"
 	    echo -e "MySQL Pass = $MYSQL_PASS"
@@ -47,11 +53,9 @@ EOF
 }
 
 initialization_check(){
-	current_date=`date +%Y%m%d`
-	backup_dir="/root/backup"
-
+	variables # The global variable
 	if [[ -e '/root/.backup.option' ]]; then
-		source .backup.option #亦可使用.引入
+		source .backup.option # Can be used .
 	else
 		echo -e "Not initialized, Please enter: \033[032m./backup.sh init"
 		exit 1
@@ -101,9 +105,10 @@ configuration(){
 
 # Upload data
 upload_file(){
+	variables
 	cd ~
 	# Upload data
-	for file in $(ls -1 ${backup_dir} |sort -r)
+	for file in $(ls -1 $backup_dir)
 		do
 			#scp ${file} root@23.239.196.3:/root/backup/${file}
 			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
@@ -114,7 +119,6 @@ upload_file(){
 # Restore all data
 restore_all(){
 	initialization_check
-
 	tar zxf mysql*.tar.gz
 	for db in $(find *.sql.gz | sed 's/.sql.gz//g')
 		do
