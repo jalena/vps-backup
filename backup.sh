@@ -101,15 +101,13 @@ configuration(){
 
 # Upload data
 upload_file(){
-	initialization_check
-	key=`ls -1 $backup_dir |sort -r`
 	cd ~
 	# Upload data
-	for localfile in $(find $backup_dir/*.tar.gz | grep $ |sort -r)
+	for file in $(ls -1 ${backup_dir} |sort -r)
 		do
-			#scp ${localfile} root@23.239.196.3:/root/backup/${localfile}
-			#sh /root/dropbox_uploader.sh upload ${localfile} backup/${localfile}
-			./qshell fput backup $key $localfile http://up.qiniug.com
+			#scp ${file} root@23.239.196.3:/root/backup/${file}
+			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
+			./qshell fput backup ${file} ${backup_dir}/${file} http://up.qiniug.com
 	done
 }
 
