@@ -103,7 +103,7 @@ configuration(){
 upload_file(){
 	cd ~
 	# Upload data
-	key = `ls -1 $backup_dir |sort -r`
+	key=`ls -1 $backup_dir |sort -r`
 	for localfile in $(find $backup_dir/*.tar.gz | grep $ |sort -r)
 		do
 			#scp ${localfile} root@23.239.196.3:/root/backup/${localfile}
