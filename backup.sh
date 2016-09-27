@@ -35,9 +35,9 @@ EOF
 	fi
 
 	if [[ ! -e '.backup.option' ]]; then
-		echo -e "\033[032mDefault web Path: /home/wwwroot"
+		echo -e "\033[032mDefault web Path: /data/wwwroot"
 		read -p "(Please enter the web Path:)" WEB_PATH
-			[[ -z $WEB_PATH ]] && WEB_PATH="/home/wwwroot"
+			[[ -z $WEB_PATH ]] && WEB_PATH="/data/wwwroot"
 		echo -e "\033[032mnginx configuration path: /usr/local/nginx/conf/vhost"
 		read -p "Please enter the nginx configuration path:" NGINX_PATH
 			[[ -z $NGINX_PATH ]] && NGINX_PATH="/usr/local/nginx/conf/vhost"
