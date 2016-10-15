@@ -12,8 +12,8 @@ Usage: ./backup.sh init|backup|db|Restore
 ```
 -
 ###备份数据如下
-* `/home/wwwroot`目录下所有站点目录（支持init配置备份目录），排除phpMyadmin
-* mysql全部数据库（排除的表：`mysql`、`performance_schema`、`information_schema`）
+* `/data/wwwroot`目录下所有站点目录（支持init配置备份目录），排除phpMyadmin
+* mysql全部数据库（排除的表：`mysql`、`performance_schema`、`information_schema`、`sys`）
 * `/usr/local/nginx/conf/vhost` 全部文件
 
 -
