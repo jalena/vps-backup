@@ -1,5 +1,4 @@
 #! /bin/bash
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 #===============================================================================================
 #   System Required:  CentOS6.x (32bit/64bit)
 #   Description: Server backup and restore script
