@@ -59,16 +59,16 @@ EOF
 }
 
 initialization_check(){
+	if [[ ! -d $BACKUP_DIR ]]; then
+		mkdir -p ${BACKUP_DIR}
+	fi
+
 	if [[ -s '/root/.backup.option']]; then
 		source /root/.backup.option
 	elif [[ -s '/root/.my.cnf' ]]; then
 		source /root/.my.cnf
 	else
 		initialization
-	fi
-
-	if [[ ! -d $BACKUP_DIR ]]; then
-		mkdir -p ${BACKUP_DIR}
 	fi
 }
 
