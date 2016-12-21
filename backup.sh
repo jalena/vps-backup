@@ -9,22 +9,16 @@
 [[ $EUID -ne 0 ]] && echo 'Error: This script must be run as root!' && exit 1
 
 # global variables
-variables(){
-	current_date=`date +%Y%m%d`
-}
+current_date=`date +%Y%m%d`
 
 # Initialize the database of account information
 function initialization(){
 	if [[ ! -e '/root/.my.cnf' ]]; then
-		echo "Please enter the MySQL user (Default : root):\n"
-		read -p MYSQL_USER
+		echo -e "\e[34mPlease enter the MySQL user (Default : \e[33mroot):\e[0m"
+		read -p "Please enter：" MYSQL_USER
 		[[ -z "$MYSQL_USER" ]] && MYSQL_USER="root"
-		echo "Please enter the MySQL password:\n"
-		read -p MYSQL_PASS
-		echo -e "---------------------------"
-		echo -e "MySQL User = $MYSQL_USER"
-		echo -e "MySQL Pass = $MYSQL_PASS"
-		echo -e "---------------------------"
+		echo -e "\e[34mPlease enter the MySQL password:\e[0m"
+		read -p "Please enter：" MYSQL_PASS
 cat > /root/.my.cnf<<EOF
 [client]
 user=$MYSQL_USER
@@ -34,86 +28,92 @@ password=$MYSQL_PASS
 user=$MYSQL_USER
 password=$MYSQL_PASS
 EOF
+		echo -e "------------------------------------------------------"
+		echo -e "MySQL User = $MYSQL_USER"
+		echo -e "MySQL Pass = $MYSQL_PASS"
+		echo -e "------------------------------------------------------"
+
 	fi
 
-	if [[ ! -e '.backup.option' ]]; then
-		echo "Please enter backup path:\n"
-		read -p BACKUP
-			[[ -z $BACKUP ]] && BACKUP = "/data/backup"
-		echo "Please enter the web Path (Default : /data/wwwroot):\n"
-		read -p WEB_PATH
-			[[ -z $WEB_PATH ]] && WEB_PATH="/data/wwwroot"
-		echo "Please enter the nginx configuration path (Default : /usr/local/nginx/conf/vhost):\n"
-		read -p NGINX_PATH
-			[[ -z $NGINX_PATH ]] && NGINX_PATH="/usr/local/nginx/conf/vhost"
-		echo -e "---------------------------"
-		echo -e "Backup directory = $WEB_PATH"
-		echo -e "nginx directory = $NGINX_PATH"
-		echo -e "---------------------------"
+	if [[ ! -e '/root/.backup.option' ]]; then
+		echo -e "\e[34mPlease enter backup path:(Default : \e[33m/data/backup\e[0m):"
+		read -p "Please enter：" BACKUP_DIR
+			[[ -z "$BACKUP_DIR" ]] && BACKUP_DIR="/data/backup"
+		echo -e "\e[34mPlease enter the path to the site (Default : \e[33m/data/wwwroot\e[0m):"
+		read -p "Please enter：" WEB_PATH
+			[[ -z "$WEB_PATH" ]] && WEB_PATH="/data/wwwroot"
+		echo -e "\e[34mPlease enter nginx configuration path (Default : \e[33m/usr/local/nginx/conf/vhost\e[0m):"
+		read -p "Please enter：" NGINX_PATH
+			[[ -z "$NGINX_PATH" ]] && NGINX_PATH="/usr/local/nginx/conf/vhost"
 cat > /root/.backup.option<<EOF
-BACKUP_DIR=$BACKUP
-WEB_PATH=$WEB_PATH
-NGINX_PATH=$NGINX_PATH
+BACKUP_DIR="$BACKUP_DIR"
+WEB_PATH="$WEB_PATH"
+NGINX_PATH="$NGINX_PATH"
 EOF
+		echo -e "------------------------------------------------------"
+		echo -e "Backup directory = \e[33m$BACKUP_DIR\e[0m"
+		echo -e "web directory = \e[33m$WEB_PATH\e[0m"
+		echo -e "nginx directory = \e[33m$NGINX_PATH\e[0m"
+		echo -e "------------------------------------------------------"
+
 	fi
 }
 
-initialization_check(){
-	if [[ ! -d $BACKUP_DIR ]]; then
-		mkdir -p ${BACKUP_DIR}
-	fi
-
-	if [[ -s '/root/.backup.option']]; then
+function initialization_check(){
+	if [[ -s '/root/.backup.option' ]]; then
 		source /root/.backup.option
 	elif [[ -s '/root/.my.cnf' ]]; then
 		source /root/.my.cnf
 	else
 		initialization
 	fi
+
+	if [[ ! -d $BACKUP_DIR ]]; then
+		mkdir -p ${BACKUP_DIR}
+	fi
 }
 
 # Backup all database tables
-backup_database(){
+function backup_database(){
 	for db in $(mysql -B -N -e 'SHOW DATABASES' |sed -e '/_schema/d' -e '/mysql/d' -e '/sys/d')
 		do
-			mysqldump ${db} | gzip -9 - > ${BACKUP_DIR}/${db}.sql.gz
+			mysqldump ${db} | gzip -9 > ${BACKUP_DIR}/${db}.sql.gz
 			echo -e "\t\e[1;32m--- Backup data table \e[1;31m${db} \e[1;32msuccess! ---\e[0m"
 	done
 
 	# Pack all database tables
-	tar zcf mysql_$current_date.tar.gz *.sql.gz --remove-files
+	tar zcPf mysql_${current_date}.tar.gz ${BACKUP_DIR}/*.sql.gz --remove-files
 }
 
 # Packing site data
-packing_data(){
+function packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
-		tar zcPf ${BACKUP_DIR}/${web}_$current_date.tar.gz ${WEB_PATH}/${web}
+		tar zcPf ${BACKUP_DIR}/${web}_${current_date}.tar.gz ${WEB_PATH}/${web}
 		echo -e "\t\e[1;32m--- package \e[1;31m${web} \e[1;32msuccess! ---\e[0m"
 	done
 }
 
 # package the nginx configuration file
-configuration(){
-	tar zcPf ${BACKUP_DIR}/nginx_$current_date.tar.gz $NGINX_PATH
-	echo -e "\t\e[1;32m--- package \e[1;31mnginx_$current_date.tar.gz \e[1;32msuccess! ---\e[0m"
-	find / -name nginx.conf |grep -v root | xargs tar rPf ${BACKUP_DIR}/nginx_$current_date.tar.gz
+function configuration(){
+	tar cPf ${BACKUP_DIR}/nginx_${current_date}.tar.gz $NGINX_PATH
+	echo -e "\t\e[1;32m--- package \e[1;31mnginx_${current_date}.tar.gz \e[1;32msuccess! ---\e[0m"
+	find / -name nginx.conf |grep -v root | xargs tar rPf ${BACKUP_DIR}/nginx_${current_date}.tar.gz
 	echo -e "\t\e[1;32m--- Additional file successfully ---\e[0m"
 }
 
 # Upload data
-upload_file(){
-	variables
+function upload_file(){
 	for file in $(ls -1 ${BACKUP_DIR})
 		do
 			#scp ${file} root@23.239.196.3:/root/backup/${file}
 			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
-			./qshell fput backup ${file} ${BACKUP_DIR}/${file} http://up.qiniug.com
+			qshell fput backup ${file} ${BACKUP_DIR}/${file} http://up.qiniug.com
 	done
 }
 
 # Restore all data
-restore_all(){
+function restore_all(){
 	initialization_check
 	cd ${BACKUP_DIR}
 	tar zxf mysql*.tar.gz
@@ -135,17 +135,17 @@ restore_all(){
 }
 
 # Initialization settings
-initial_setup(){
+function initial_setup(){
 	initialization
 }
 
-backup_db(){
+function backup_db(){
 	initialization_check
 	backup_database
 }
 
 # Full backup
-backup_all(){
+function backup_all(){
 	initialization_check
 	backup_database
 	packing_data
