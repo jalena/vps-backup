@@ -14,11 +14,11 @@ current_date=`date +%Y%m%d`
 # Initialize the database of account information
 function initialization(){
 	if [[ ! -e '/root/.my.cnf' ]]; then
-		echo -e "\e[34mPlease enter the MySQL user (Default : \e[33mroot):\e[0m"
-		read -p "Please enter：" MYSQL_USER
+		echo -e -n "\e[34mPlease enter the MySQL user (Default : \e[33mroot\e[34m):\e[0m"
+		read MYSQL_USER
 		[[ -z "$MYSQL_USER" ]] && MYSQL_USER="root"
-		echo -e "\e[34mPlease enter the MySQL password:\e[0m"
-		read -p "Please enter：" MYSQL_PASS
+		echo -e -n "\e[34mPlease enter the MySQL password:\e[0m"
+		read MYSQL_PASS
 cat > /root/.my.cnf<<EOF
 [client]
 user=$MYSQL_USER
@@ -36,14 +36,14 @@ EOF
 	fi
 
 	if [[ ! -e '/root/.backup.option' ]]; then
-		echo -e "\e[34mPlease enter backup path:(Default : \e[33m/data/backup\e[0m):"
-		read -p "Please enter：" BACKUP_DIR
+		echo -e -n "\e[34mPlease enter backup path:(Default : \e[33m/data/backup\e[34m):\e[0m"
+		read BACKUP_DIR
 			[[ -z "$BACKUP_DIR" ]] && BACKUP_DIR="/data/backup"
-		echo -e "\e[34mPlease enter the path to the site (Default : \e[33m/data/wwwroot\e[0m):"
-		read -p "Please enter：" WEB_PATH
+		echo -e -n "\e[34mPlease enter the path to the site (Default : \e[33m/data/wwwroot\e[34m):\e[0m"
+		read WEB_PATH
 			[[ -z "$WEB_PATH" ]] && WEB_PATH="/data/wwwroot"
-		echo -e "\e[34mPlease enter nginx configuration path (Default : \e[33m/usr/local/nginx/conf/vhost\e[0m):"
-		read -p "Please enter：" NGINX_PATH
+		echo -e -n "\e[34mPlease enter nginx configuration path (Default : \e[33m/usr/local/nginx/conf/vhost\e[34m):\e[0m"
+		read NGINX_PATH
 			[[ -z "$NGINX_PATH" ]] && NGINX_PATH="/usr/local/nginx/conf/vhost"
 cat > /root/.backup.option<<EOF
 BACKUP_DIR="$BACKUP_DIR"
@@ -89,8 +89,11 @@ function backup_database(){
 function packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
-		tar zcPf ${BACKUP_DIR}/${web}_${current_date}.tar.gz ${WEB_PATH}/${web}
-		echo -e "\t\e[1;32m--- package \e[1;31m${web} \e[1;32msuccess! ---\e[0m"
+		if [[ -d ${WEB_PATH}/${web} ]]; then
+			echo ${WEB_PATH}/${web}
+			tar zcPf ${BACKUP_DIR}/${web}_${current_date}.tar.gz ${WEB_PATH}/${web}
+			echo -e "\t\e[1;32m--- package \e[1;31m${web} \e[1;32msuccess! ---\e[0m"
+		fi
 	done
 }
 
@@ -119,14 +122,13 @@ function restore_all(){
 	tar zxf sql*.tar.gz --strip-components ${num}
 	for db in $(find ${BACKUP_DIR}/*.sql.gz | sed 's/.sql.gz//g')
 		do
-			# mysqladmin create ${db}
-			# gunzip -f < ${BACKUP_DIR}/${db}.sql.gz | mysql ${db}
+			mysqladmin create ${db}
+			gunzip -f < ${BACKUP_DIR}/${db}.sql.gz | mysql ${db}
 	done
 
 	for web in $(ls -1 ${BACKUP_DIR}/*.tar.gz| grep -v mysql |grep -v nginx)
 		do
 			tar zxPf ${BACKUP_DIR}/${web}
-
 	done
 
 	for nginx in $(ls -1 ${BACKUP_DIR}/nginx*)
