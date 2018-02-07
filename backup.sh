@@ -90,7 +90,6 @@ function packing_data(){
 	for web in $(ls -1 ${WEB_PATH} |sed -e '/phpMy/d')
 	do
 		if [[ -d ${WEB_PATH}/${web} ]]; then
-			echo ${WEB_PATH}/${web}
 			tar zcPf ${BACKUP_DIR}/${web}_${current_date}.tar.gz ${WEB_PATH}/${web}
 			echo -e "\t\e[1;32m--- package \e[1;31m${web} \e[1;32msuccess! ---\e[0m"
 		fi
