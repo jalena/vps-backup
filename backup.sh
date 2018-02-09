@@ -106,12 +106,11 @@ function configuration(){
 
 # Upload data
 function upload_file(){
-	for file in $(ls -1 ${BACKUP_DIR})
-		do
-			#scp ${file} root@23.239.196.3:/root/backup/${file}
-			#sh /root/dropbox_uploader.sh upload ${file} backup/${file}
-			qshell fput backup ${file} ${BACKUP_DIR}/${file} http://up.qiniug.com
-	done
+	coscmd upload ${BACKUP_DIR} ${current_date}/
+	# for file in $(ls -1 ${BACKUP_DIR})
+	# 	do
+	# 		#scp ${file} root@23.239.196.3:/root/backup/${file}
+	# done
 }
 
 # Restore all data
